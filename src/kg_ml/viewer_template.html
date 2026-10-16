@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparador de Grafos P1 × P2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f8fafc; color: #1e293b; }
+  header { display: flex; align-items: center; gap: 8px 12px; padding: 10px 16px; background: white; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; }
+  header h1 { font-size: 15px; margin: 0 8px 0 0; color: #475569; font-weight: 600; }
+  select, button { padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 13px; background: white; cursor: pointer; color: #1e293b; }
+  button:hover, select:hover { border-color: #94a3b8; }
+  .group { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #475569; }
+  .group input[type=range] { width: 110px; }
+  #thr-value { font-variant-numeric: tabular-nums; min-width: 2.6em; }
+  #stats { color: #64748b; font-size: 12.5px; margin-left: auto; }
+  .layout { display: flex; height: calc(100vh - 55px); }
+  .panes { flex: 1; display: flex; min-width: 0; }
+  .pane { flex: 1; position: relative; min-width: 0; }
+  .pane + .pane { border-left: 1px solid #e2e8f0; }
+  .pane .cy { position: absolute; inset: 0; }
+  .caption { position: absolute; top: 8px; left: 10px; z-index: 2; font-size: 12px; font-weight: 600; color: #475569; background: rgba(248,250,252,.9); padding: 3px 8px; border-radius: 6px; border: 1px solid #e2e8f0; pointer-events: none; }
+  #layout-host { position: absolute; left: -10000px; top: 0; width: 1000px; height: 800px; visibility: hidden; }
+  #side { width: 360px; overflow-y: auto; padding: 14px; background: white; border-left: 1px solid #e2e8f0; font-size: 12.5px; line-height: 1.5; }
+  #side h2 { font-size: 13px; margin: 18px 0 6px; color: #475569; }
+  #side h2:first-child { margin-top: 0; }
+  .hint { color: #94a3b8; }
+  .muted { color: #64748b; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { padding: 3px 4px; text-align: right; border-bottom: 1px solid #f1f5f9; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: #64748b; font-weight: 600; font-size: 11.5px; }
+  tr.total td { font-weight: 600; border-top: 1px solid #cbd5e1; }
+  .legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .line { width: 26px; height: 0; border-top-width: 3px; flex-shrink: 0; }
+  .legend-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .pair-title { font-weight: 600; margin-bottom: 6px; }
+  .kv { display: grid; grid-template-columns: 34px 1fr; gap: 2px 8px; margin-bottom: 8px; }
+  .kv b { color: #475569; }
+  .mention { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; }
+  .mention.chosen { border-color: #93c5fd; }
+  .mention .tags { color: #64748b; font-size: 11.5px; margin-top: 3px; }
+  mark { background: #fef08a; color: inherit; border-radius: 2px; padding: 0 1px; }
+  .note { color: #64748b; font-style: italic; margin: 4px 0; }
+  #case-text { white-space: pre-wrap; color: #334155; background: #f8fafc; padding: 8px; border-radius: 6px; max-height: 260px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Comparador de Grafos — Projeto 1 × Projeto 2</h1>
+  <button id="prev-btn" title="Caso anterior">‹</button>
+  <select id="case-select" aria-label="Caso"></select>
+  <button id="next-btn" title="Próximo caso">›</button>
+  <button id="random-btn">🎲 aleatório</button>
+  <select id="mode-select" aria-label="Modo">
+    <option value="side">Modo: Lado a lado</option>
+    <option value="diff">Modo: Diferença</option>
+    <option value="p1">Modo: Só P1</option>
+    <option value="p2">Modo: Só P2</option>
+  </select>
+  <select id="layout-select" aria-label="Layout">
+    <option value="concentric">Layout: Concêntrico (por tipo)</option>
+    <option value="cose">Layout: Forças</option>
+  </select>
+  <label class="group"><input type="checkbox" id="ent-only" checked> Só relações entre entidades</label>
+  <label class="group" id="thr-group">Prob. mín. P2 <input type="range" id="thr" min="0" max="1" step="0.05" value="0"> <span id="thr-value">0.00</span></label>
+  <span id="stats"></span>
+</header>
+<div class="layout">
+  <div class="panes">
+    <div class="pane" id="pane-a"><div class="caption" id="caption-a"></div><div class="cy" id="cy-a"></div></div>
+    <div class="pane" id="pane-b"><div class="caption" id="caption-b"></div><div class="cy" id="cy-b"></div></div>
+  </div>
+  <div id="side">
+    <h2>Seleção</h2>
+    <div id="details"><span class="hint">Clique numa aresta para ver as frases e a probabilidade, ou num nó para ver os atributos.</span></div>
+    <h2>Comparação neste caso</h2>
+    <div id="case-table"></div>
+    <h2>Todos os casos</h2>
+    <div id="global-table"></div>
+    <h2>Legenda</h2>
+    <div id="edge-legend"></div>
+    <div id="legend" class="legend-cols" style="margin-top:8px"></div>
+    <h2>Paciente</h2>
+    <div id="patient-info" class="muted"></div>
+    <h2>Texto do caso</h2>
+    <div id="case-text"></div>
+  </div>
+</div>
+<div id="layout-host"></div>
+<script>
+const DATA = __DATA__;
+const PMI = __PMI__;
+const COLORS = __COLORS__;
+const RINGS = __RINGS__;
+const MODEL = "__MODEL__";
+const RELATIONS = ["TREATED_BY", "SUPPORTS", "LOCATED_IN", "TARGETS", "PERFORMED_ON", "CONFIRMS", "EXCLUDES", "REVEALS"];
+// Cores da comparação (validadas para daltonismo); "só P1" também é tracejada.
+const DIFF = { both: "#94a3b8", onlyp1: "#d6336c", onlyp2: "#1c7ed6", changed: "#c26a00", struct: "#e2e8f0", plain: "#94a3b8" };
+const caseIds = Object.keys(DATA).sort();
+
+const $ = id => document.getElementById(id);
+const state = { caseId: null, mode: "side", layout: "concentric", entOnly: true, thr: 0 };
+let panes = [];          // [{cy, view}]
+const posCache = {};
+
+const LAYOUTS = {
+  concentric: { name: "concentric", concentric: n => RINGS[n.data("type")] ?? 0, levelWidth: () => 1, minNodeSpacing: 30, animate: false, avoidOverlap: true },
+  cose: { name: "cose", animate: false, nodeRepulsion: 500000, idealEdgeLength: 100, edgeElasticity: 80, gravity: 15, numIter: 3000, nodeOverlap: 40, randomize: true },
+};
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = p => (p === null || p === undefined) ? "" : p.toFixed(2);
+
+// ---------- comparação de uma aresta (par source → target) ----------
+function p2Visible(e) {
+  if (e.ent && e.p !== null && e.p < state.thr) return [];
+  return e.r2;
+}
+function compare(e) {
+  const r2 = p2Visible(e);
+  const common = e.r1.filter(r => r2.includes(r));
+  const onlyP1 = e.r1.filter(r => !r2.includes(r));
+  const onlyP2 = r2.filter(r => !e.r1.includes(r));
+  return { r2, common, onlyP1, onlyP2, changed: onlyP1.length > 0 && onlyP2.length > 0 };
+}
+
+function visibleEdges(c) { return c.edges.filter(e => !state.entOnly || e.ent); }
+
+function nodeElements(c) {
+  let ids = null;
+  if (state.entOnly) {
+    ids = new Set();
+    for (const e of c.edges) if (e.ent) { ids.add(e.s); ids.add(e.t); }
+  }
+  return c.nodes.filter(n => !ids || ids.has(n.id)).map(n => ({ data: { ...n } }));
+}
+
+// view: "p1" | "p2" | "diff"; colorize: pinta pela comparação (lado a lado / diferença)
+function edgeElements(c, view, colorize) {
+  const out = [];
+  const push = (e, rel, cls, label) => {
+    const data = { id: `${view}|${e.s}|${e.t}|${rel}`, source: e.s, target: e.t, label, pair: `${e.s}|${e.t}` };
+    if (e.ent && e.p !== null && (view !== "p1") && cls !== "onlyp1") data.prob = e.p;
+    out.push({ data, classes: cls });
+  };
+  const probLabel = (e, r) => (e.ent && e.p !== null) ? `${r} ${fmt(e.p)}` : r;
+  for (const e of visibleEdges(c)) {
+    const k = compare(e);
+    if (!e.ent) {
+      const rels = view === "p2" ? e.r2 : view === "p1" ? e.r1 : [...new Set([...e.r1, ...e.r2])];
+      rels.forEach(r => push(e, r, "struct", r));
+      continue;
+    }
+    if (view === "p1") {
+      e.r1.forEach(r => push(e, r, !colorize ? "plain" : k.common.includes(r) ? "both" : k.changed ? "changed" : "onlyp1", r));
+    } else if (view === "p2") {
+      k.r2.forEach(r => push(e, r, !colorize ? "plain" : k.common.includes(r) ? "both" : k.changed ? "changed" : "onlyp2", probLabel(e, r)));
+    } else {
+      k.common.forEach(r => push(e, r, "both", probLabel(e, r)));
+      if (k.changed) push(e, "changed", "changed", `${k.onlyP1.join("/")} → ${k.onlyP2.join("/")} ${fmt(e.p)}`);
+      else {
+        k.onlyP1.forEach(r => push(e, r, "onlyp1", r));
+        k.onlyP2.forEach(r => push(e, r, "onlyp2", probLabel(e, r)));
+      }
+    }
+  }
+  return out;
+}
+
+// ---------- posições compartilhadas: layout calculado uma vez sobre o grafo união ----------
+function positions(c) {
+  const key = `${state.caseId}|${state.layout}|${state.entOnly}`;
+  if (posCache[key]) return posCache[key];
+  const union = visibleEdges(c).filter(e => e.r1.length || e.r2.length)
+    .map(e => ({ data: { id: `u|${e.s}|${e.t}`, source: e.s, target: e.t, label: "" } }));
+  const host = cytoscape({ container: $("layout-host"), elements: { nodes: nodeElements(c), edges: union }, style: baseStyle() });
+  host.layout(LAYOUTS[state.layout]).run();
+  const pos = {};
+  host.nodes().forEach(n => { pos[n.id()] = { ...n.position() }; });
+  host.destroy();
+  return (posCache[key] = pos);
+}
+
+function baseStyle() {
+  const color = (t, i) => (COLORS[t] || ["#e2e8f0", "#94a3b8"])[i];
+  return [
+    { selector: "node", style: {
+        "label": "data(label)", "font-size": 9, "text-wrap": "wrap", "text-max-width": "90px",
+        "width": 34, "height": 34, "text-valign": "bottom", "text-margin-y": 4, "color": "#334155",
+        "background-color": n => color(n.data("type"), 0), "border-width": 2, "border-color": n => color(n.data("type"), 1) } },
+    { selector: 'node[type="Patient"]', style: { "width": 50, "height": 50, "font-size": 10, "font-weight": "bold" } },
+    { selector: "edge", style: {
+        "label": "data(label)", "font-size": 7, "color": "#64748b", "curve-style": "bezier", "target-arrow-shape": "triangle", "arrow-scale": 0.9,
+        "width": 1.4, "line-color": "#cbd5e1", "target-arrow-color": "#cbd5e1",
+        "text-rotation": "autorotate", "text-background-color": "#f8fafc", "text-background-opacity": 0.85, "text-background-padding": 1 } },
+    { selector: "edge[prob]", style: { "width": e => 1 + 4 * e.data("prob") } },
+    ...["struct", "plain", "both", "onlyp1", "onlyp2", "changed"].map(cls => ({
+      selector: `edge.${cls}`, style: { "line-color": DIFF[cls], "target-arrow-color": DIFF[cls] } })),
+    { selector: "edge.struct", style: { "color": "#94a3b8" } },
+    { selector: "edge.onlyp1", style: { "line-style": "dashed", "line-dash-pattern": [6, 3] } },
+    { selector: ".faded", style: { "opacity": 0.12 } },
+    { selector: "edge.hl", style: { "underlay-color": "#facc15", "underlay-opacity": 0.45, "underlay-padding": 3, "z-index": 10, "font-size": 9, "color": "#1e293b" } },
+    { selector: "node.hl", style: { "underlay-color": "#facc15", "underlay-opacity": 0.45, "underlay-padding": 5 } },
+  ];
+}
+
+// ---------- montagem dos painéis ----------
+const VIEWS = {
+  side: [["p1", "Projeto 1 · regras", true], ["p2", `Projeto 2 · classificador (${MODEL})`, true]],
+  diff: [["diff", "Diferença P1 × P2", true]],
+  p1: [["p1", "Projeto 1 · regras", false]],
+  p2: [["p2", `Projeto 2 · classificador (${MODEL})`, false]],
+};
+
+function render() {
+  const c = DATA[state.caseId];
+  const pos = positions(c);
+  panes.forEach(p => p.cy.destroy());
+  panes = [];
+  const views = VIEWS[state.mode];
+  $("pane-b").style.display = views.length > 1 ? "" : "none";
+  views.forEach(([view, caption, colorize], i) => {
+    const suffix = i === 0 ? "a" : "b";
+    $(`caption-${suffix}`).textContent = caption;
+    const cy = cytoscape({
+      container: $(`cy-${suffix}`),
+      elements: { nodes: nodeElements(c), edges: edgeElements(c, view, colorize) },
+      style: baseStyle(),
+      layout: { name: "preset", positions: n => pos[n.id()], fit: true, padding: 30 },
+    });
+    panes.push({ cy, view, colorize });
+    cy.on("tap", "edge", ev => select({ pair: ev.target.data("pair") }));
+    cy.on("tap", "node", ev => select({ node: ev.target.id() }));
+    cy.on("tap", ev => { if (ev.target === cy) select(null); });
+  });
+  syncViewports();
+  updateSide();
+}
+
+// pan/zoom sincronizados entre os dois painéis
+function syncViewports() {
+  if (panes.length < 2) return;
+  // só copia quando o outro painel está diferente: evita um painel reemitir para o outro sem fim
+  const close = (a, b) => Math.abs(a - b) < 1e-6;
+  panes.forEach((p, i) => p.cy.on("viewport", () => {
+    const other = panes[1 - i].cy;
+    const z = p.cy.zoom(), pan = p.cy.pan(), op = other.pan();
+    if (close(z, other.zoom()) && close(pan.x, op.x) && close(pan.y, op.y)) return;
+    other.viewport({ zoom: z, pan: { x: pan.x, y: pan.y } });
+  }));
+  panes[1].cy.viewport({ zoom: panes[0].cy.zoom(), pan: { ...panes[0].cy.pan() } });
+}
+
+// troca só as arestas (limiar), sem mexer no layout nem no zoom
+function refreshEdges() {
+  const c = DATA[state.caseId];
+  panes.forEach(p => {
+    p.cy.edges().remove();
+    p.cy.add(edgeElements(c, p.view, p.colorize));
+  });
+  if (current) applyHighlight();
+  updateSide();
+}
+
+// ---------- seleção e destaque ----------
+let current = null;
+function select(sel) {
+  current = sel;
+  applyHighlight();
+  showDetails();
+}
+function applyHighlight() {
+  panes.forEach(({ cy }) => {
+    cy.elements().removeClass("hl faded");
+    if (!current) return;
+    let focus;
+    if (current.pair) {
+      const edges = cy.edges().filter(e => e.data("pair") === current.pair);
+      const [s, t] = current.pair.split("|");
+      focus = edges.union(cy.$id(s)).union(cy.$id(t));
+      edges.addClass("hl");
+    } else {
+      const node = cy.$id(current.node);
+      focus = node.closedNeighborhood();
+      node.addClass("hl");
+    }
+    if (focus.length) cy.elements().not(focus).addClass("faded");
+  });
+}
+
+function nodeById(id) { return DATA[state.caseId].nodes.find(n => n.id === id); }
+function nodeName(n) { return `${esc(n.type)} · <b>${esc(n.label)}</b>`; }
+
+function highlightSentence(text, spans) {
+  const sorted = [...spans].sort((a, b) => a[0] - b[0]);
+  let html = "", last = 0;
+  for (const [a, b] of sorted) {
+    if (a < last) continue;
+    html += esc(text.slice(last, a)) + "<mark>" + esc(text.slice(a, b)) + "</mark>";
+    last = b;
+  }
+  return html + esc(text.slice(last));
+}
+
+function showDetails() {
+  const box = $("details");
+  const c = DATA[state.caseId];
+  if (!current) { box.innerHTML = '<span class="hint">Clique numa aresta para ver as frases e a probabilidade, ou num nó para ver os atributos.</span>'; return; }
+
+  if (current.node) {
+    const n = nodeById(current.node);
+    const deg = g => c.edges.filter(e => e.ent && (e.s === n.id || e.t === n.id) && (g === 1 ? e.r1 : p2Visible(e)).length).length;
+    box.innerHTML = `<div class="pair-title">${nodeName(n)}</div>
+      <div class="muted">${esc(n.attributes || "(sem atributos)")}</div>
+      <div class="muted">id: ${esc(n.id)}</div>
+      <div style="margin-top:6px">Relações entre entidades: P1 <b>${deg(1)}</b> · P2 <b>${deg(2)}</b></div>`;
+    return;
+  }
+
+  const [s, t] = current.pair.split("|");
+  const e = c.edges.find(x => x.s === s && x.t === t);
+  const a = nodeById(s), b = nodeById(t);
+  const k = compare(e);
+  let html = `<div class="pair-title">${nodeName(a)} → ${nodeName(b)}</div>`;
+  if (!e.ent) {
+    html += `<div class="kv"><b>P1</b><span>${e.r1.join(", ") || "—"}</span><b>P2</b><span>${e.r2.join(", ") || "—"}</span></div>
+      <div class="note">Aresta estrutural: o P2 mantém as arestas do P1 que não ligam duas entidades.</div>`;
+    box.innerHTML = html;
+    return;
+  }
+  let p2txt;
+  if (e.r2.length && k.r2.length) p2txt = `${e.r2.join(", ")} <span class="muted">(prob ${fmt(e.p)})</span>`;
+  else if (e.r2.length) p2txt = `<span class="muted">${e.r2.join(", ")} (prob ${fmt(e.p)}) — abaixo do limiar ${fmt(state.thr)}</span>`;
+  else p2txt = "— <span class=\"muted\">(sem aresta)</span>";
+  html += `<div class="kv"><b>P1</b><span>${e.r1.join(", ") || "— <span class=\"muted\">(sem aresta)</span>"}</span><b>P2</b><span>${p2txt}</span></div>`;
+
+  const pmiKey = [`${a.type}:${a.label}`, `${b.type}:${b.label}`].sort().join("|");
+  const pmi = PMI[pmiKey];
+  html += `<div class="muted">${pmi ? `PMI no corpus: <b>${pmi[0]}</b> (juntos em ${pmi[1]} casos)` : "Sem associação PMI no corpus para este par."}</div>`;
+
+  const ms = c.mentions[current.pair] || [];
+  if (!ms.length) {
+    html += `<div class="note">Sem frase candidata: o P2 não avaliou este par (entidades em frases diferentes ou com mais de 30 tokens entre elas).</div>`;
+    if (e.r1.includes("TREATED_BY")) html += `<div class="note">No P1, TREATED_BY liga o tratamento ao último diagnóstico visto, mesmo em outra frase.</div>`;
+  } else {
+    if (e.r1.includes("TREATED_BY") && !ms.some(m => m[5] === "TREATED_BY"))
+      html += `<div class="note">O P1 criou TREATED_BY pela regra do último diagnóstico visto, não por estas frases.</div>`;
+    const chosen = e.r2.length ? ms.filter(m => m[6] !== "NONE").reduce((best, m) => (!best || m[7] > best[7]) ? m : best, null) : null;
+    html += `<div style="margin:8px 0 4px" class="muted">Frases com o par (${ms.length}):</div>`;
+    for (const m of ms) {
+      const [si, a0, a1, b0, b1, p1l, pred, score] = m;
+      const text = c.sentences[String(si)] || "";
+      html += `<div class="mention${m === chosen ? " chosen" : ""}">${highlightSentence(text, [[a0, a1], [b0, b1]])}
+        <div class="tags">frase ${si} · P1: ${esc(p1l)} · P2: ${esc(pred)} (prob ${fmt(score)})${m === chosen ? " · usada no grafo do P2" : ""}</div></div>`;
+    }
+  }
+  box.innerHTML = html;
+}
+
+// ---------- tabelas e painel ----------
+function counts(edges) {
+  const rows = Object.fromEntries(RELATIONS.map(r => [r, { p1: 0, p2: 0, both: 0 }]));
+  for (const e of edges) {
+    if (!e.ent) continue;
+    const k = compare(e);
+    e.r1.forEach(r => rows[r] && rows[r].p1++);
+    k.r2.forEach(r => rows[r] && rows[r].p2++);
+    k.common.forEach(r => rows[r] && rows[r].both++);
+  }
+  return rows;
+}
+function tableHtml(rows) {
+  const tot = { p1: 0, p2: 0, both: 0 };
+  let body = "";
+  for (const r of RELATIONS) {
+    const x = rows[r];
+    if (!x.p1 && !x.p2) continue;
+    tot.p1 += x.p1; tot.p2 += x.p2; tot.both += x.both;
+    body += `<tr><td>${r}</td><td>${x.p1}</td><td>${x.p2}</td><td>${x.both}</td><td>${x.p1 - x.both}</td><td>${x.p2 - x.both}</td></tr>`;
+  }
+  if (!body) return '<span class="hint">Nenhuma relação entre entidades.</span>';
+  return `<table><tr><th>relação</th><th>P1</th><th>P2</th><th>ambos</th><th>só P1</th><th>só P2</th></tr>${body}
+    <tr class="total"><td>Total</td><td>${tot.p1}</td><td>${tot.p2}</td><td>${tot.both}</td><td>${tot.p1 - tot.both}</td><td>${tot.p2 - tot.both}</td></tr></table>`;
+}
+
+function updateSide() {
+  const c = DATA[state.caseId];
+  $("case-table").innerHTML = tableHtml(counts(c.edges));
+  $("global-table").innerHTML = tableHtml(counts(caseIds.flatMap(id => DATA[id].edges))) +
+    `<div class="muted" style="margin-top:4px">${caseIds.length} casos${state.thr > 0 ? ` · P2 com prob ≥ ${fmt(state.thr)}` : ""}</div>`;
+  const n1 = c.edges.filter(e => e.ent).reduce((n, e) => n + e.r1.length, 0);
+  const n2 = c.edges.filter(e => e.ent).reduce((n, e) => n + compare(e).r2.length, 0);
+  $("stats").textContent = `${panes[0].cy.nodes().length} nós · relações entre entidades: P1 ${n1}, P2 ${n2}`;
+  $("thr-group").style.display = state.mode === "p1" ? "none" : "";
+  renderEdgeLegend();
+  if (current) showDetails();
+}
+
+function renderEdgeLegend() {
+  const line = (color, style, text) => `<div class="legend-item"><span class="line" style="border-top-color:${color};border-top-style:${style}"></span>${text}</div>`;
+  let html = "";
+  if (state.mode === "side" || state.mode === "diff") {
+    html += line(DIFF.both, "solid", "nos dois grafos");
+    html += line(DIFF.onlyp1, "dashed", "só no P1");
+    html += line(DIFF.onlyp2, "solid", "só no P2");
+    html += line(DIFF.changed, "solid", "mesmo par, relação diferente");
+  }
+  if (!state.entOnly) html += line(DIFF.struct, "solid", "estrutural (igual nos dois)");
+  if (state.mode !== "p1") html += '<div class="muted" style="margin-top:4px">Espessura da aresta do P2 = probabilidade (1 − P(NONE)).</div>';
+  $("edge-legend").innerHTML = html;
+}
+
+function setCase(id) {
+  state.caseId = id;
+  current = null;
+  if (location.hash.slice(1) !== id) history.replaceState(null, "", "#" + id);
+  $("case-select").value = id;
+  const c = DATA[id];
+  $("patient-info").textContent = c.patient || "(sem info)";
+  $("case-text").textContent = c.text || "";
+  render();
+  showDetails();
+}
+
+// ---------- controles ----------
+for (const id of caseIds) {
+  const opt = document.createElement("option");
+  opt.value = id; opt.textContent = id;
+  $("case-select").appendChild(opt);
+}
+for (const [type, [fill, stroke]] of Object.entries(COLORS)) {
+  const div = document.createElement("div");
+  div.className = "legend-item";
+  div.innerHTML = `<span class="swatch" style="background:${fill};border:1.5px solid ${stroke}"></span>${type}`;
+  $("legend").appendChild(div);
+}
+const step = d => setCase(caseIds[(caseIds.indexOf(state.caseId) + d + caseIds.length) % caseIds.length]);
+$("case-select").addEventListener("change", ev => setCase(ev.target.value));
+$("prev-btn").addEventListener("click", () => step(-1));
+$("next-btn").addEventListener("click", () => step(1));
+$("random-btn").addEventListener("click", () => setCase(caseIds[Math.floor(Math.random() * caseIds.length)]));
+$("mode-select").addEventListener("change", ev => { state.mode = ev.target.value; render(); applyHighlight(); });
+$("layout-select").addEventListener("change", ev => { state.layout = ev.target.value; render(); applyHighlight(); });
+$("ent-only").addEventListener("change", ev => { state.entOnly = ev.target.checked; current = null; render(); showDetails(); });
+$("thr").addEventListener("input", ev => { state.thr = parseFloat(ev.target.value); $("thr-value").textContent = fmt(state.thr); refreshEdges(); });
+window.addEventListener("hashchange", () => { const id = location.hash.slice(1); if (DATA[id] && id !== state.caseId) setCase(id); });
+
+const fromHash = location.hash.slice(1);
+setCase(DATA[fromHash] ? fromHash : caseIds[Math.floor(Math.random() * caseIds.length)]);
+</script>
+</body>
+</html>
