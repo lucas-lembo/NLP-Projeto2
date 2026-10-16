@@ -1,0 +1,165 @@
+pair_type,ngram,n,count,p_given_type,pmi
+diagnosis-anatomical_site,involving the,2,23,0.006,2.073
+diagnosis-anatomical_site,involving,1,27,0.007,1.901
+diagnosis-anatomical_site,biopsy,1,60,0.0156,1.577
+diagnosis-anatomical_site,consistent with,2,45,0.0117,1.337
+diagnosis-anatomical_site,consistent,1,45,0.0117,1.323
+diagnosis-anatomical_site,metastatic,1,30,0.0078,1.201
+diagnosis-anatomical_site,no evidence,2,22,0.0057,1.181
+diagnosis-anatomical_site,no evidence of,3,22,0.0057,1.181
+diagnosis-anatomical_site,evidence,1,38,0.0099,1.151
+diagnosis-anatomical_site,out,1,28,0.0073,1.141
+diagnosis-anatomical_site,evidence of,2,36,0.0094,1.134
+diagnosis-anatomical_site,suggestive of,2,24,0.0062,1.134
+diagnosis-anatomical_site,suggestive,1,24,0.0062,1.134
+diagnosis-anatomical_site,small,1,21,0.0055,1.114
+diagnosis-anatomical_site,signs of,2,25,0.0065,1.06
+diagnosis-anatomical_site,lesions,1,23,0.006,1.005
+diagnosis-anatomical_site,signs,1,25,0.0065,0.997
+diagnosis-anatomical_site,acute,1,53,0.0138,0.964
+diagnosis-anatomical_site,other,1,20,0.0052,0.918
+diagnosis-anatomical_site,enlarged,1,24,0.0062,0.898
+diagnosis-anatomical_site,disease,1,49,0.0128,0.889
+diagnosis-anatomical_site,without,1,45,0.0117,0.887
+diagnosis-anatomical_site,tissue,1,25,0.0065,0.862
+diagnosis-anatomical_site,diffuse,1,21,0.0055,0.851
+diagnosis-anatomical_site,bilateral,1,53,0.0138,0.848
+diagnosis-treatment,started on,2,34,0.0171,3.253
+diagnosis-treatment,was started on,3,29,0.0146,3.222
+diagnosis-treatment,with intravenous,2,22,0.011,3.21
+diagnosis-treatment,was treated with,3,38,0.0191,3.114
+diagnosis-treatment,treated with,2,80,0.0402,3.059
+diagnosis-treatment,was treated,2,41,0.0206,3.028
+diagnosis-treatment,was started,2,34,0.0171,3.015
+diagnosis-treatment,antibiotics,1,20,0.01,2.966
+diagnosis-treatment,treated,1,89,0.0447,2.927
+diagnosis-treatment,initiated,1,21,0.0105,2.889
+diagnosis-treatment,started,1,48,0.0241,2.827
+diagnosis-treatment,managed,1,20,0.01,2.819
+diagnosis-treatment,intravenous,1,40,0.0201,2.796
+diagnosis-treatment,induced,1,21,0.0105,2.756
+diagnosis-treatment,treatment with,2,23,0.0115,2.69
+diagnosis-treatment,treatment,1,67,0.0336,2.611
+diagnosis-treatment,deficiency,1,23,0.0115,2.583
+diagnosis-treatment,antinuclear,1,21,0.0105,2.522
+diagnosis-treatment,received,1,22,0.011,2.419
+diagnosis-treatment,virus,1,25,0.0126,2.367
+diagnosis-treatment,therapy,1,28,0.0141,2.193
+diagnosis-treatment,oral,1,25,0.0126,2.095
+diagnosis-treatment,antibody,1,20,0.01,2.073
+diagnosis-treatment,patient,1,37,0.0186,1.235
+diagnosis-treatment,the patient,2,31,0.0156,1.226
+exam-anatomical_site,ct of the,3,73,0.0128,1.823
+exam-anatomical_site,scan of the,3,93,0.0163,1.79
+exam-anatomical_site,the abdomen and,3,28,0.0049,1.79
+exam-anatomical_site,ct of,2,85,0.0149,1.776
+exam-anatomical_site,scan of,2,112,0.0197,1.756
+exam-anatomical_site,abdomen and,2,71,0.0125,1.747
+exam-anatomical_site,of the abdomen,3,36,0.0063,1.715
+exam-anatomical_site,ct scan of,3,78,0.0137,1.699
+exam-anatomical_site,mri of,2,87,0.0153,1.693
+exam-anatomical_site,mri of the,3,81,0.0142,1.692
+exam-anatomical_site,tender,1,21,0.0037,1.685
+exam-anatomical_site,chest abdomen and,3,21,0.0037,1.685
+exam-anatomical_site,that the tumor,3,20,0.0035,1.674
+exam-anatomical_site,lymph node,2,23,0.004,1.653
+exam-anatomical_site,of the chest,3,42,0.0074,1.629
+exam-anatomical_site,chest abdomen,2,21,0.0037,1.629
+exam-anatomical_site,neutrophils,1,28,0.0049,1.615
+exam-anatomical_site,soft,1,23,0.004,1.602
+exam-anatomical_site,node,1,119,0.0209,1.574
+exam-anatomical_site,revealed that,2,35,0.0062,1.574
+exam-anatomical_site,the tumor,2,35,0.0062,1.574
+exam-anatomical_site,revealed that the,3,30,0.0053,1.558
+exam-anatomical_site,showed that the,3,28,0.0049,1.535
+exam-anatomical_site,thorax,1,21,0.0037,1.522
+exam-anatomical_site,the abdomen,2,37,0.0065,1.474
+exam-diagnosis,confirmed,1,68,0.0436,2.384
+exam-diagnosis,hemoglobin,1,21,0.0135,2.196
+exam-diagnosis,diagnosis of,2,23,0.0147,2.006
+exam-diagnosis,out,1,20,0.0128,1.956
+exam-diagnosis,diagnosis,1,27,0.0173,1.915
+exam-diagnosis,was performed,2,33,0.0212,1.572
+exam-diagnosis,demonstrated,1,32,0.0205,1.566
+exam-diagnosis,mild,1,37,0.0237,1.514
+exam-diagnosis,performed,1,49,0.0314,1.512
+exam-diagnosis,revealed,1,200,0.1282,1.484
+exam-diagnosis,cell,1,20,0.0128,1.093
+exam-diagnosis,showed,1,170,0.109,1.047
+exam-diagnosis,bilateral,1,24,0.0154,1.005
+exam-diagnosis,acute,1,20,0.0128,0.859
+exam-diagnosis,computed,1,20,0.0128,0.751
+exam-diagnosis,elevated,1,20,0.0128,0.675
+exam-diagnosis,chronic,1,26,0.0167,0.634
+exam-diagnosis,ct,1,45,0.0288,0.558
+exam-diagnosis,scan,1,21,0.0135,0.332
+exam-diagnosis,serum,1,21,0.0135,0.185
+exam-symptom,ecg,1,22,0.0128,3.217
+exam-symptom,sinus,1,32,0.0186,2.992
+exam-symptom,significant,1,21,0.0122,2.034
+exam-symptom,revealed,1,229,0.1332,1.539
+exam-symptom,showed,1,261,0.1518,1.526
+exam-symptom,demonstrated,1,33,0.0192,1.47
+exam-symptom,mild,1,35,0.0204,1.293
+exam-symptom,patient,1,30,0.0175,1.145
+exam-symptom,the patient,2,25,0.0145,1.128
+exam-symptom,performed,1,40,0.0233,1.079
+exam-symptom,confirmed,1,30,0.0175,1.063
+exam-symptom,scan,1,32,0.0186,0.8
+exam-symptom,severe,1,28,0.0163,0.785
+exam-symptom,was performed,2,20,0.0116,0.71
+exam-symptom,mri,1,29,0.0169,0.683
+exam-symptom,ct,1,53,0.0308,0.654
+exam-symptom,computed,1,20,0.0116,0.611
+exam-symptom,normal,1,33,0.0192,0.428
+exam-symptom,chronic,1,24,0.014,0.379
+symptom-diagnosis,chronic kidney,2,22,0.0076,2.564
+symptom-diagnosis,obstructive,1,25,0.0086,2.511
+symptom-diagnosis,failure,1,42,0.0145,2.397
+symptom-diagnosis,fever,1,30,0.0104,2.295
+symptom-diagnosis,nausea,1,22,0.0076,2.242
+symptom-diagnosis,hypertension,1,47,0.0162,2.181
+symptom-diagnosis,heart,1,31,0.0107,2.166
+symptom-diagnosis,symptoms,1,22,0.0076,1.88
+symptom-diagnosis,loss,1,21,0.0073,1.878
+symptom-diagnosis,secondary to,2,25,0.0086,1.801
+symptom-diagnosis,presented,1,24,0.0083,1.797
+symptom-diagnosis,respiratory,1,24,0.0083,1.769
+symptom-diagnosis,pain,1,38,0.0131,1.768
+symptom-diagnosis,associated,1,40,0.0138,1.742
+symptom-diagnosis,secondary,1,31,0.0107,1.737
+symptom-diagnosis,chronic,1,93,0.0321,1.581
+symptom-diagnosis,stage,1,21,0.0073,1.576
+symptom-diagnosis,associated with,2,21,0.0073,1.549
+symptom-diagnosis,pulmonary,1,33,0.0114,1.513
+symptom-diagnosis,such as,2,21,0.0073,1.497
+symptom-diagnosis,such,1,21,0.0073,1.422
+symptom-diagnosis,type,1,21,0.0073,1.35
+symptom-diagnosis,kidney,1,28,0.0097,1.327
+symptom-diagnosis,severe,1,68,0.0235,1.313
+symptom-diagnosis,grade,1,21,0.0073,1.26
+treatment-anatomical_site,extracted from,2,26,0.0064,2.359
+treatment-anatomical_site,extracted,1,27,0.0066,2.261
+treatment-anatomical_site,liver function,2,20,0.0049,2.092
+treatment-anatomical_site,hormone,1,22,0.0054,2.066
+treatment-anatomical_site,were positive for,3,21,0.0051,2.051
+treatment-anatomical_site,staining,1,28,0.0068,2.011
+treatment-anatomical_site,electrolytes,1,53,0.013,1.992
+treatment-anatomical_site,levels of,2,43,0.0105,1.957
+treatment-anatomical_site,were positive,2,24,0.0059,1.789
+treatment-anatomical_site,calcium,1,27,0.0066,1.742
+treatment-anatomical_site,positive for,2,47,0.0115,1.72
+treatment-anatomical_site,administered,1,24,0.0059,1.713
+treatment-anatomical_site,function,1,99,0.0242,1.659
+treatment-anatomical_site,urea,1,42,0.0103,1.656
+treatment-anatomical_site,glucose,1,25,0.0061,1.565
+treatment-anatomical_site,csf,1,23,0.0056,1.511
+treatment-anatomical_site,levels,1,81,0.0198,1.496
+treatment-anatomical_site,cultures,1,28,0.0068,1.493
+treatment-anatomical_site,renal function,2,23,0.0056,1.445
+treatment-anatomical_site,antibodies,1,30,0.0073,1.413
+treatment-anatomical_site,using,1,43,0.0105,1.397
+treatment-anatomical_site,sodium,1,23,0.0056,1.382
+treatment-anatomical_site,positive,1,88,0.0215,1.295
+treatment-anatomical_site,urine,1,39,0.0095,1.207
+treatment-anatomical_site,level,1,48,0.0117,1.178

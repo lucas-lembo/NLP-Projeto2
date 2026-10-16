@@ -1,0 +1,40 @@
+trigger,use,pair_type,rank,pmi,count
+no evidence of,exam_result,exam-diagnosis,,,
+no evidence of,exam_result,exam-symptom,,,
+without evidence of,exam_result,exam-diagnosis,,,
+without evidence of,exam_result,exam-symptom,,,
+consistent with,exam_result,exam-diagnosis,,,
+consistent with,exam_result,exam-symptom,,,
+suggestive of,exam_result,exam-diagnosis,,,
+suggestive of,exam_result,exam-symptom,,,
+indicative of,exam_result,exam-diagnosis,,,
+indicative of,exam_result,exam-symptom,,,
+positive for,exam_result,exam-diagnosis,,,
+positive for,exam_result,exam-symptom,,,
+diagnostic of,exam_result,exam-diagnosis,,,
+diagnostic of,exam_result,exam-symptom,,,
+ruled out,exam_result,exam-diagnosis,,,
+ruled out,exam_result,exam-symptom,,,
+negative for,exam_result,exam-diagnosis,,,
+negative for,exam_result,exam-symptom,,,
+treated with,administration,diagnosis-treatment,5.0,3.059,80.0
+started on,administration,diagnosis-treatment,1.0,3.253,34.0
+showed,exam_result,exam-diagnosis,12.0,1.047,170.0
+showed,exam_result,exam-symptom,5.0,1.526,261.0
+demonstrated,exam_result,exam-diagnosis,7.0,1.566,32.0
+demonstrated,exam_result,exam-symptom,6.0,1.47,33.0
+revealed,exam_result,exam-diagnosis,10.0,1.484,200.0
+revealed,exam_result,exam-symptom,4.0,1.539,229.0
+indicated,exam_result,exam-diagnosis,,,
+indicated,exam_result,exam-symptom,,,
+noted,exam_result,exam-diagnosis,,,
+noted,exam_result,exam-symptom,,,
+confirmed,exam_result,exam-diagnosis,1.0,2.384,68.0
+confirmed,exam_result,exam-symptom,11.0,1.063,30.0
+excluded,exam_result,exam-diagnosis,,,
+excluded,exam_result,exam-symptom,,,
+given,administration,diagnosis-treatment,,,
+administered,administration,diagnosis-treatment,,,
+received,administration,diagnosis-treatment,19.0,2.419,22.0
+prescribed,administration,diagnosis-treatment,,,
+underwent,administration,diagnosis-treatment,,,

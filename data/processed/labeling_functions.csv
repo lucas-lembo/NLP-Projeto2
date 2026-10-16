@@ -1,0 +1,8 @@
+labeling_function,coverage,votes,conflict_rate,most_common_vote
+lf_p1_trigger,0.0674,2668,0.491,REVEALS
+lf_learned_pattern,0.2349,9301,0.5888,REVEALS
+lf_adjacent,0.1188,4705,0.0191,PERFORMED_ON
+lf_far,0.1975,7819,0.3197,NONE
+lf_separator,0.0609,2411,0.258,NONE
+lf_entity_between,0.3539,14012,0.3196,NONE
+lf_negation,0.0073,288,0.7708,EXCLUDES

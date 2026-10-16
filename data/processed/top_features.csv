@@ -1,0 +1,136 @@
+label,feature,weight
+CONFIRMS,between__suggestive of,3.976
+CONFIRMS,between__suggestive,3.954
+CONFIRMS,between__consistent with,3.673
+CONFIRMS,between__consistent,3.643
+CONFIRMS,between__positive for,2.883
+CONFIRMS,between__positive,2.455
+CONFIRMS,meta__pair_type_exam-diagnosis,2.355
+CONFIRMS,between__was positive,1.77
+CONFIRMS,between__indicative,1.729
+CONFIRMS,between__indicative of,1.729
+CONFIRMS,between__was,1.542
+CONFIRMS,context__l_elevated,1.477
+CONFIRMS,between__were consistent,1.472
+CONFIRMS,between__was consistent,1.463
+CONFIRMS,between__were,1.441
+EXCLUDES,between__negative for,4.168
+EXCLUDES,between__no,3.675
+EXCLUDES,between__negative,3.549
+EXCLUDES,between__excluded,3.438
+EXCLUDES,between__without,3.108
+EXCLUDES,between__no evidence,2.972
+EXCLUDES,between__evidence of,2.847
+EXCLUDES,between__evidence,2.808
+EXCLUDES,meta__pair_type_exam-symptom,2.313
+EXCLUDES,meta__pair_type_exam-diagnosis,2.244
+EXCLUDES,between__with no,1.912
+EXCLUDES,between__was negative,1.636
+EXCLUDES,context__r_or,1.606
+EXCLUDES,between__were negative,1.5
+EXCLUDES,context__l_prothrombin,1.424
+LOCATED_IN,meta__pair_type_diagnosis-anatomical_site,6.771
+LOCATED_IN,between__disease,1.76
+LOCATED_IN,between__without,1.592
+LOCATED_IN,between__bilateral,1.586
+LOCATED_IN,between__biopsy,1.579
+LOCATED_IN,between__lesions,1.579
+LOCATED_IN,between__acute,1.514
+LOCATED_IN,between__small,1.244
+LOCATED_IN,between__signs,1.123
+LOCATED_IN,between__consistent,1.093
+LOCATED_IN,between__out,1.069
+LOCATED_IN,between__other,1.053
+LOCATED_IN,between__tissue,1.033
+LOCATED_IN,meta__distance_0-2,1.026
+LOCATED_IN,between__signs of,1.003
+NONE,"between__,",6.639
+NONE,between__;,6.241
+NONE,between__but,3.656
+NONE,meta__distance_11+,2.309
+NONE,"between__, but",1.957
+NONE,between__mg,1.682
+NONE,between__blood,1.571
+NONE,between__serum,1.501
+NONE,meta__pair_type_exam-anatomical_site,1.422
+NONE,between__(,1.411
+NONE,between__cells,1.278
+NONE,between__liver,1.087
+NONE,meta__pair_type_treatment-anatomical_site,1.027
+NONE,between__however,1.007
+NONE,between__neck,0.996
+PERFORMED_ON,meta__pair_type_exam-anatomical_site,6.502
+PERFORMED_ON,meta__distance_0-2,2.438
+PERFORMED_ON,between__soft,1.936
+PERFORMED_ON,between__tender,1.93
+PERFORMED_ON,between__that,1.656
+PERFORMED_ON,between__that the,1.654
+PERFORMED_ON,between__the tumor,1.492
+PERFORMED_ON,between__) of,1.384
+PERFORMED_ON,between__revealed that,1.37
+PERFORMED_ON,between__showed that,1.199
+PERFORMED_ON,between__tumor,1.042
+PERFORMED_ON,between__scan of,1.028
+PERFORMED_ON,between__the chest,0.992
+PERFORMED_ON,between__node,0.938
+PERFORMED_ON,between__chest,0.932
+REVEALS,between__revealed,4.573
+REVEALS,between__showed,4.521
+REVEALS,meta__pair_type_exam-symptom,3.859
+REVEALS,meta__pair_type_exam-diagnosis,3.672
+REVEALS,between__performed,2.104
+REVEALS,between__demonstrated,1.74
+REVEALS,between__mild,1.621
+REVEALS,between__normal,1.413
+REVEALS,between__was performed,1.314
+REVEALS,between__diagnosis,1.303
+REVEALS,between__significant,1.162
+REVEALS,between__diagnosis of,1.083
+REVEALS,between__computed,1.045
+REVEALS,between__patient,0.984
+REVEALS,between__revealed a,0.979
+SUPPORTS,meta__pair_type_symptom-diagnosis,6.593
+SUPPORTS,between__chronic,1.639
+SUPPORTS,between__severe,1.576
+SUPPORTS,between__and,1.442
+SUPPORTS,between__associated,1.291
+SUPPORTS,between__symptoms,1.207
+SUPPORTS,between__secondary,1.143
+SUPPORTS,between__presented,0.969
+SUPPORTS,context__l_kidney,0.967
+SUPPORTS,between__to,0.939
+SUPPORTS,between__loss,0.92
+SUPPORTS,between__type,0.908
+SUPPORTS,between__secondary to,0.895
+SUPPORTS,between__associated with,0.861
+SUPPORTS,between__such as,0.858
+TARGETS,meta__pair_type_treatment-anatomical_site,6.431
+TARGETS,between__positive,2.42
+TARGETS,between__using,2.249
+TARGETS,between__level,2.067
+TARGETS,between__levels,2.057
+TARGETS,between__function,1.893
+TARGETS,between__cultures,1.871
+TARGETS,between__staining,1.286
+TARGETS,meta__distance_0-2,1.253
+TARGETS,between__administered,1.235
+TARGETS,between__positive for,1.231
+TARGETS,between__csf,1.06
+TARGETS,between__level of,0.98
+TARGETS,context__r_protein,0.928
+TARGETS,context__r_antibody,0.864
+TREATED_BY,meta__pair_type_diagnosis-treatment,6.542
+TREATED_BY,between__treated,2.062
+TREATED_BY,between__treatment,1.906
+TREATED_BY,between__treated with,1.773
+TREATED_BY,between__patient,1.58
+TREATED_BY,between__the patient,1.577
+TREATED_BY,between__therapy,1.502
+TREATED_BY,between__was,1.373
+TREATED_BY,between__received,1.332
+TREATED_BY,between__started,1.262
+TREATED_BY,between__intravenous,1.075
+TREATED_BY,between__antibody,1.024
+TREATED_BY,between__given,0.989
+TREATED_BY,between__oral,0.839
+TREATED_BY,between__virus,0.839

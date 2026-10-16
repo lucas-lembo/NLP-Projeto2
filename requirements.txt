@@ -1,0 +1,7 @@
+pandas
+pyarrow
+requests
+scikit-learn
+joblib
+matplotlib
+networkx
