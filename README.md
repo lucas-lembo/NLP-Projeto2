@@ -38,13 +38,13 @@ O visualizador é gerado por [`build_viewer.py`](src/kg_ml/build_viewer.py) a pa
 
 ## Metodologia
 
-O [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) extraía o grafo só com regras. O NER por dicionário (MeSH) funcionava razoavelmente. A parte fraca eram as **relações entre entidades**: duas entidades na mesma frase viravam aresta por co-ocorrência, e o tipo da relação vinha de uma lista de gatilhos escrita à mão. No próprio relatório do P1, apontamos três consequências:
+O [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) extraía o grafo só com regras. O NER por dicionário (MeSH) funcionava razoavelmente. A parte fraca eram as **relações entre entidades**. Bastava duas entidades aparecerem na mesma frase para o sistema criar uma aresta entre elas (co-ocorrência), sem verificar se a frase de fato as relacionava. Em *"paciente com histórico de **asma** chegou com fratura no **braço** esquerdo"*, por exemplo, o P1 criaria `Asma LOCATED_IN Braço`. Ou seja, o P1 tratava a proximidade das entidades no texto como se fosse uma relação. Além disso, o tipo da relação vinha de uma lista de gatilhos escrita à mão. No próprio relatório do P1, apontamos três consequências:
 
 - `Asthma TREATED_BY Heparin`, porque o tratamento era ligado ao último diagnóstico visto;
 - 28% das arestas eram pura proximidade anatômica no texto;
 - nenhuma aresta tinha grau de confiança.
 
-No Projeto 2, mantivemos a segmentação de sentenças e o NER do P1 e trocamos a etapa de relações por um **classificador treinado com atributos de N-gramas**. Para isso, aprendemos padrões com estatística em um corpus 70 vezes maior. Não usamos LLM, embeddings nem Transformers em nenhuma etapa da extração.
+No Projeto 2, mantivemos a segmentação de sentenças e o NER do P1 e trocamos a etapa de relações por um **classificador treinado com atributos de N-gramas**. Em vez de ligar todo par que aparece junto, o classificador olha as palavras entre as duas entidades e decide qual é a relação ou responde `NONE`, ou seja, "estão na mesma frase, mas não se relacionam". Para isso, aprendemos padrões com estatística em um corpus 70 vezes maior. Não usamos LLM, embeddings nem Transformers em nenhuma etapa da extração.
 
 ```mermaid
 flowchart LR
@@ -65,7 +65,25 @@ O código do P1 é importado como biblioteca, sem nenhuma alteração. O pipelin
 
 Os 56 casos do P1 são poucos para estimar estatística de N-gramas. Baixamos o `cases.parquet` do MultiCaRe (versão 3.0.1, 98.641 casos) e sorteamos **4.000 casos**, excluindo os 50 artigos do P1. Os 56 casos originais ficaram reservados só para a avaliação, então nada deles entra no treino.
 
-Em cada caso, rodamos a segmentação e o NER do P1. Na amostra de treino usamos só a busca exata (Aho-Corasick): a busca tolerante do P1 levaria horas nesse volume. Nos 56 casos de teste usamos o NER completo, para os nós saírem idênticos aos do grafo do P1.
+Em cada caso, aplicamos duas etapas que reaproveitamos do P1 sem alteração:
+
+- **Segmentação em sentenças:** uma expressão regular corta o texto onde há pontuação final (`.`, `!`, `?`) seguida de espaço e letra maiúscula.
+- **NER por dicionário (gazetteer):** o reconhecimento de entidades não usa nenhum modelo; ele procura no texto termos de cinco listas montadas a partir do [MeSH](https://www.nlm.nih.gov/mesh/), o vocabulário médico da National Library of Medicine. Cada tipo de entidade vem de um ramo da árvore do MeSH:
+
+| Entidade | Ramo do MeSH | Exemplos |
+|---|---|---|
+| `Symptom` | `C23` (sinais e sintomas) | fever, dyspnea |
+| `Diagnosis` | `C`, exceto `C23` (doenças) | pneumonia, asthma |
+| `Exam` | `E01` (procedimentos diagnósticos) | biopsy, colonoscopy |
+| `Treatment` | `D` + `E02` (drogas e procedimentos terapêuticos) | heparin, intubation |
+| `AnatomicalSite` | `A` (anatomia) | lung, knee |
+
+A busca nas listas tem duas partes:
+
+- **Busca exata (Aho-Corasick):** um autômato com todos os termos lê cada sentença uma única vez e acha todas as ocorrências. Quando dois termos casam no mesmo trecho, vence o mais longo (`acute coronary syndrome` vence `coronary`).
+- **Busca tolerante (Damerau-Levenshtein):** aceita até 1 erro de digitação por palavra, mas só em sintomas, exames e locais, porque nas listas maiores ela seria lenta demais.
+
+No P2, a amostra de treino usa só a busca exata, porque a tolerante levaria horas nos 4.000 casos. Nos 56 casos de teste usamos o NER completo, para os nós saírem idênticos aos do grafo do P1.
 
 Um **par candidato** é qualquer dupla de entidades na mesma sentença cujos tipos podem se relacionar, com no máximo 30 tokens entre elas. São 7 tipos de par, com as mesmas relações do P1:
 
@@ -78,11 +96,20 @@ Um **par candidato** é qualquer dupla de entidades na mesma sentença cujos tip
 | `Exam` → `AnatomicalSite` | `PERFORMED_ON` |
 | `Exam` → `Diagnosis` / `Symptom` | `CONFIRMS`, `EXCLUDES`, `REVEALS` |
 
-Todo par também pode receber `NONE`, ou seja, "não há relação". Essa é a diferença principal para o P1, onde a co-ocorrência dizia "sim" para todo par na mesma frase. Para cada par, guardamos o texto entre as entidades, 3 palavras de contexto de cada lado e o que as regras do P1 teriam decidido (`p1_label`). Isso permite comparar os dois projetos par a par.
+Todo par também pode receber `NONE`, ou seja, "não há relação". Essa é a diferença principal para o P1, onde a co-ocorrência dizia "sim" para todo par na mesma frase. Para cada par, guardamos o texto entre as entidades, 3 palavras de contexto de cada lado e o que as regras do P1 teriam decidido (`p1_label`). Dois pares reais dos casos de teste:
+
+| Frase (entidades em negrito) | Entre as entidades | Contexto à esquerda | Contexto à direita | P1 decidiria |
+|---|---|---|---|---|
+| *The patient was diagnosed with **herpes zoster** and treated with **acyclovir** (500 mg twice a day)* | `and treated with` | `was diagnosed with` | `500 mg twice` | `TREATED_BY` |
+| *...yet the **serum** liver enzymes and **bilirubin** bounced up.* | `liver enzymes and` | `daily yet the` | `bounced up` | `TARGETS` |
+
+O texto entre as entidades é a principal pista da relação (`treated with`). O contexto dos lados ajuda quando a pista está fora do trecho do meio: `was diagnosed with` antes do diagnóstico ou uma dose (`500 mg`) depois do remédio reforçam `TREATED_BY`. Esses três textos viram os atributos do classificador (seção 4), e o texto entre as entidades é onde procuramos os gatilhos por PMI (seção 2). O `p1_label` permite comparar os dois projetos par a par. No segundo exemplo, o P1 liga bilirrubina e soro só porque estão na mesma frase; o classificador do P2 responde `NONE`.
 
 O resultado são **39.596 pares de treino** e **636 pares de teste** (52 dos 56 casos têm pelo menos um par).
 
 ### 2. N-gramas + PMI: gatilhos aprendidos
+
+Depois da seção 1, temos 39.596 pares de treino, cada um com o texto entre as entidades e o contexto dos lados. Mas ainda não sabemos quais deles têm relação: os pares não têm rótulo. Esta etapa responde a uma primeira pergunta: **quais palavras costumam indicar cada tipo de relação?** A ideia é olhar todos os pares de um mesmo tipo e ver quais sequências de palavras aparecem entre as entidades com frequência fora do comum. Se `treated with` aparece muito mais entre pares diagnóstico–tratamento do que entre pares em geral, é um bom indício de que essa expressão sinaliza `TREATED_BY`. Essas expressões viram **gatilhos aprendidos**, que usamos na seção 3 para rotular os pares.
 
 No P1, os gatilhos (`treated with`, `revealed`...) foram escritos à mão. Aqui eles são **descobertos do corpus**: para cada tipo de par `T`, procuramos os N-gramas `g` (1 a 3 palavras) que aparecem entre as duas entidades com mais frequência do que entre pares em geral. A medida é a informação mútua pontual (PMI):
 
