@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Roda o pipeline inteiro do Projeto 2, na ordem dos passos.
-# Uso (de dentro de project2/): bash pipelines/workflows/run_all.sh
-# O código do Projeto 1 precisa estar em ../../NLP-Projeto1 ou em $P1_DIR.
+# Uso (da raiz do repositório): bash pipelines/workflows/run_all.sh
+# O código do Projeto 1 precisa estar em ../NLP-Projeto1 ou em $P1_DIR.
 set -e
 export PYTHONPATH=src
 

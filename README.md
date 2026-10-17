@@ -15,7 +15,7 @@
 
 ## Demonstração Executável
 
-[Notebook de demonstração](pipelines/notebooks/demo.ipynb) ([abrir no Colab](https://colab.research.google.com/github/<usuario>/<repo>/blob/main/project2/pipelines/notebooks/demo.ipynb))
+[Notebook de demonstração](pipelines/notebooks/demo.ipynb) ([abrir no Colab](https://colab.research.google.com/github/lucas-lembo/NLP-Projeto2/blob/main/pipelines/notebooks/demo.ipynb))
 
 O notebook carrega os resultados já calculados pelo pipeline e roda em segundos, sem baixar o MultiCaRe nem rodar o NER. Ele mostra:
 

@@ -1,11 +1,13 @@
 # Código do Projeto 2
 
-Pacote `kg_ml`. Ele usa o código do [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) (`kg_extraction`) como biblioteca, sem alterá-lo. Por padrão, o Projeto 1 é procurado em `../../NLP-Projeto1` (relativo a `project2/`). Para outro local, use a variável `P1_DIR`.
+Pacote `kg_ml`. Ele usa o código do [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) (`kg_extraction`) como biblioteca, sem alterá-lo. Por padrão, o Projeto 1 é procurado em `../NLP-Projeto1`, ou seja, clonado ao lado deste repositório. Para outro local, use a variável `P1_DIR`.
 
 ## Como rodar
 
 ```bash
-cd project2
+git clone https://github.com/jrsbr/NLP-Projeto1.git
+git clone https://github.com/lucas-lembo/NLP-Projeto2.git
+cd NLP-Projeto2
 pip install -r requirements.txt
 bash pipelines/workflows/run_all.sh        # ou os módulos um por um:
 PYTHONPATH=src python3 -m kg_ml.<módulo>

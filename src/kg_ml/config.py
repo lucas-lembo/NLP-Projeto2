@@ -1,7 +1,7 @@
 """Caminhos e constantes do Projeto 2.
 
 O código do Projeto 1 é usado como biblioteca (NER, gatilhos, valor+unidade),
-sem nenhuma alteração. Por padrão ele fica em ../../NLP-Projeto1 em relação a
+sem nenhuma alteração. Por padrão ele fica em ../NLP-Projeto1 em relação a
 esta pasta; dá pra trocar com a variável de ambiente P1_DIR.
 """
 
@@ -16,7 +16,7 @@ from kg_ml.features import NONE_LABEL, PAIR_RELATIONS  # noqa: F401
 
 ROOT = Path(__file__).resolve().parents[2]
 
-P1_DIR = Path(os.environ.get("P1_DIR", ROOT.parents[1] / "NLP-Projeto1")).resolve()
+P1_DIR = Path(os.environ.get("P1_DIR", ROOT.parent / "NLP-Projeto1")).resolve()
 sys.path.insert(0, str(P1_DIR / "src"))
 
 DATA_RAW = ROOT / "data" / "raw"
