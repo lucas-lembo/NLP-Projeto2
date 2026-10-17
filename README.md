@@ -1,7 +1,13 @@
 # Projeto `Relações Clínicas Aprendidas com N-gramas e Aprendizado de Máquina Clássico`
 # Project `Learning Clinical Relations with N-grams and Classical Machine Learning`
 
-**Equipe:** Mateus Farha, Lucas Lembo, Gustavo Rodrigues, Gabriela Coppo, João Azeredo
+| Nome | RA |
+|---|---|
+| Mateus Farha | 252678 |
+| Lucas Lembo | 254467 |
+| Gustavo Rodrigues | 238183 |
+| Gabriela Coppo | 167163 |
+| João Azeredo | 288818 |
 
 ## Slides
 
@@ -19,9 +25,20 @@ O notebook carrega os resultados já calculados pelo pipeline e roda em segundos
 - o grafo de um caso nas duas versões;
 - o grafo de associação entre conceitos.
 
+### Visualizador P1 × P2
+
+[Comparador de grafos](assets/graph_viewer/index.html) ([abrir no navegador](https://htmlpreview.github.io/?https://github.com/lucas-lembo/NLP-Projeto2/blob/main/assets/graph_viewer/index.html)): uma página HTML única, feita com Cytoscape.js, que mostra o grafo de cada um dos 56 casos nas duas versões. Os nós são os mesmos nos dois grafos, então as arestas podem ser comparadas uma a uma. É possível:
+
+- ver os grafos **lado a lado**, só o P1, só o P2 ou no **modo diferença**, que colore as arestas que só o P1 criou, as que só o P2 criou e as que mudaram de relação;
+- usar um **limiar de probabilidade** para esconder as arestas do P2 com confiança baixa e ver o grafo mudar;
+- clicar numa aresta para ver a **frase de origem**, a probabilidade dada pelo classificador e o **PMI do par no corpus**, ou seja, a camada de associação servindo de segunda evidência;
+- ler o texto do caso e as tabelas de comparação do caso e do conjunto todo.
+
+O visualizador é gerado por [`build_viewer.py`](src/kg_ml/build_viewer.py) a partir dos mesmos CSVs do relatório.
+
 ## Metodologia
 
-O Projeto 1 extraía o grafo só com regras. O NER por dicionário (MeSH) funcionava razoavelmente. A parte fraca eram as **relações entre entidades**: duas entidades na mesma frase viravam aresta por co-ocorrência, e o tipo da relação vinha de uma lista de gatilhos escrita à mão. No próprio relatório do P1, apontamos três consequências:
+O [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) extraía o grafo só com regras. O NER por dicionário (MeSH) funcionava razoavelmente. A parte fraca eram as **relações entre entidades**: duas entidades na mesma frase viravam aresta por co-ocorrência, e o tipo da relação vinha de uma lista de gatilhos escrita à mão. No próprio relatório do P1, apontamos três consequências:
 
 - `Asthma TREATED_BY Heparin`, porque o tratamento era ligado ao último diagnóstico visto;
 - 28% das arestas eram pura proximidade anatômica no texto;
@@ -140,8 +157,7 @@ Comparamos **Regressão Logística** (com `class_weight="balanced"`, porque `NON
 
 ### 5. Avaliação e montagem do grafo
 
-Sorteamos **210 pares de teste** (30 por tipo de par) dos 56 casos do P1. Eles foram pré-anotados por um modelo de linguagem (ver [Como Modelos de Linguagem foram Usados](#como-modelos-de-linguagem-foram-usados)) e revisados pela equipe, seguindo um [guia de anotação](data/annotation/GUIA-ANOTACAO.md). O critério é o que **a frase afirma** sobre o paciente, não o que é verdade em medicina.
-
+Sorteamos **210 pares de teste** (30 por tipo de par) dos 56 casos do P1. Eles foram pré-anotados por um modelo de linguagem (ver [Como Modelos de Linguagem foram Usados](#como-modelos-de-linguagem-foram-usados)) e revisados pela equipe, seguindo um [guia de anotação](data/annotation/GUIA-ANOTACAO.md). Cada um dos 5 membros revisou 42 pares; o nome de quem revisou fica na coluna `reviewer` e as justificativas dos casos ambíguos, na coluna `notes`. O critério é o que **a frase afirma** sobre o paciente, não o que é verdade em medicina.
 As métricas são precisão, recall e F1 das relações. Um acerto exige o rótulo exato, e prever `NONE` nunca conta como acerto. Também medimos a **detecção** (só "tem relação ou não") e reportamos tudo por tipo de par.
 
 O grafo do P2 usa os **mesmos nós** do P1: o NER é o mesmo. Mantivemos as arestas do paciente, histórico, resultados de exame, unidades e achados, e trocamos só as arestas entre entidades pelas previsões do classificador (uni+bigramas). Quando o mesmo par de nós aparece em várias frases, fica a menção de maior probabilidade.
@@ -204,8 +220,6 @@ A camada de associação ([`concept_pmi.csv`](data/processed/concept_pmi.csv)) f
 
 ## Resultados
 
-> Resultados provisórios: as métricas abaixo usam os 210 pares pré-anotados e serão atualizadas depois da revisão completa da equipe.
-
 ### Gatilhos aprendidos
 
 O PMI recuperou os gatilhos centrais do P1 sem ter visto a lista. `started on` ficou em 1º lugar entre os padrões de diagnóstico–tratamento, `confirmed` em 1º em exame–diagnóstico, e `revealed`, `showed` e `demonstrated` entre os 12 primeiros de exame–diagnóstico e exame–sintoma. No total, 7 dos 23 gatilhos de exame e de administração do P1 aparecem entre os padrões com PMI positivo. Os que faltam, como `ruled out`, `no evidence of` e `prescribed`, aparecem menos de 20 vezes entre pares próximos na amostra ([`p1_triggers_vs_pmi.csv`](data/processed/p1_triggers_vs_pmi.csv)).
@@ -262,6 +276,27 @@ Por tipo de par (F1):
 
 A maior perda é em exame–local (`PERFORMED_ON`), com recall de 0,21. Os rótulos automáticos só marcam essa relação quando exame e local estão colados (*"abdominal CT"*). Por isso o modelo não aprendeu casos como *"computed tomography, demonstrating a lesion ... of the pancreas"*. É um limite da supervisão fraca: o modelo herda os pontos cegos das funções que o rotularam.
 
+Matriz de confusão da Regressão Logística com uni+bigramas nos 210 pares (linhas: rótulo anotado; colunas: previsão; [`confusion_logreg_ngram2.csv`](data/processed/confusion_logreg_ngram2.csv)):
+
+| Anotado ↓ / Previsto → | CONFIRMS | EXCLUDES | LOCATED_IN | NONE | PERFORMED_ON | REVEALS | SUPPORTS | TARGETS | TREATED_BY |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `CONFIRMS` | **3** | 0 | 0 | 1 | 0 | 5 | 0 | 0 | 0 |
+| `EXCLUDES` | 0 | **1** | 0 | 0 | 0 | 2 | 0 | 0 | 0 |
+| `LOCATED_IN` | 0 | 0 | **8** | 2 | 0 | 0 | 0 | 0 | 0 |
+| `NONE` | 0 | 1 | 11 | **72** | 0 | 20 | 11 | 8 | 11 |
+| `PERFORMED_ON` | 0 | 0 | 0 | 11 | **3** | 0 | 0 | 0 | 0 |
+| `REVEALS` | 0 | 0 | 0 | 0 | 0 | **18** | 0 | 0 | 0 |
+| `SUPPORTS` | 0 | 0 | 0 | 2 | 0 | 0 | **4** | 0 | 0 |
+| `TARGETS` | 0 | 0 | 0 | 2 | 0 | 0 | 0 | **2** | 0 |
+| `TREATED_BY` | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | **11** |
+
+A matriz mostra de onde vêm os erros:
+
+- **A maior parte dos erros está na linha `NONE`.** Dos 134 pares sem relação, 62 receberam alguma relação. Isso é mais da metade das 119 relações previstas, e explica a precisão de 0,42. O modelo ainda erra para o lado de criar aresta.
+- **`PERFORMED_ON` quase sempre vira `NONE`** (11 de 14), o ponto cego da supervisão fraca descrito acima.
+- **Entre as relações de exame, a confusão é com `REVEALS`.** 5 dos 9 `CONFIRMS` e 2 dos 3 `EXCLUDES` foram previstos como `REVEALS`. O modelo acerta que o exame se relaciona com o achado, mas erra a polaridade. Isso combina com a limitação de `REVEALS` ser previsto demais.
+- **Quando existe relação de outro tipo, quase não há troca entre tipos.** Fora da família de exame, os erros são sempre "relação ↔ `NONE`", porque a previsão é restrita às relações permitidas para cada tipo de par.
+
 ### Grafo do P1 × grafo do P2
 
 ![Comparação dos grafos](assets/images/comparacao-grafos.png)
@@ -292,8 +327,7 @@ Entre os pares de conceitos que aparecem juntos em pelo menos 15 casos, os de ma
 
 ### Limitações
 
-- **A anotação de teste é pequena.** São 210 pares, e algumas classes têm poucos exemplos (3 de `EXCLUDES`, 4 de `TARGETS`), então as métricas por classe variam muito com poucos pares.
-- **Erros do NER limitam tudo.** Vários pares de teste têm entidade com tipo errado (*"aspirin"* marcada como exame, *"serum"* como local) e foram anotados como `NONE`. O classificador não corrige o NER do P1.
+- **A anotação de teste é pequena.** São 210 pares, e algumas classes têm poucos exemplos (3 de `EXCLUDES`, 4 de `TARGETS`), então as métricas por classe variam muito com poucos pares.- **Erros do NER limitam tudo.** Vários pares de teste têm entidade com tipo errado (*"aspirin"* marcada como exame, *"serum"* como local) e foram anotados como `NONE`. O classificador não corrige o NER do P1.
 - **Só relações dentro da frase.** Relações que o texto afirma em frases diferentes não são candidatas.
 - **`REVEALS` é previsto demais** (precisão de 0,40), efeito do `class_weight` e dos gatilhos PMI, que sempre votam `REVEALS` para pares de exame.
 - **NER exato no treino, completo no teste.** A amostra de treino não tem as entidades que só a busca tolerante acharia. Isso é pouco, porque essa busca só roda em três tipos e com no máximo 1 edição.
@@ -302,7 +336,7 @@ Entre os pares de conceitos que aparecem juntos em pelo menos 15 casos, os de ma
 
 - **Nenhum LLM, embedding ou Transformer na extração.** Sentenças, NER, pares, PMI, rótulos automáticos, classificador e grafo são estatística e ML clássico ([`src/kg_ml/`](src/kg_ml/)).
 - **Desenvolvimento do código:** um LLM (Claude) escreveu a maior parte do código do P2 a partir do plano da equipe. A equipe revisou o código e as decisões.
-- **Pré-anotação dos pares de teste:** o LLM sugeriu rótulos para os 210 pares de teste (coluna `suggested_label`), e a equipe revisou e corrigiu cada um (coluna `gold_label`). Esses rótulos só são usados na avaliação; nunca entram no treino nem no pipeline.
+- **Pré-anotação dos pares de teste:** o LLM sugeriu rótulos para os 210 pares de teste (coluna `suggested_label`), e a equipe revisou cada um (coluna `gold_label`). Esses rótulos só são usados na avaliação; nunca entram no treino nem no pipeline.
 - **Consulta e escrita:** o LLM foi usado para tirar dúvidas sobre os métodos, planejar o projeto e redigir este README e os slides, revisados pela equipe.
 
 ## Referências Bibliográficas
@@ -314,5 +348,5 @@ Entre os pares de conceitos que aparecem juntos em pelo menos 15 casos, os de ma
 - Church, K. W., & Hanks, P. (1990). Word Association Norms, Mutual Information, and Lexicography. *Computational Linguistics*, 16(1), 22–29. https://aclanthology.org/J90-1003/
 - Jurafsky, D., & Martin, J. H. *Speech and Language Processing* (3ª ed., rascunho). https://web.stanford.edu/~jurafsky/slp3/
 - Pedregosa, F. et al. (2011). Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2825–2830.
-- Projeto 1 da equipe: Grafo de Conhecimento a partir de Casos Clínicos (baseline deste trabalho).
+- Projeto 1 da equipe: Grafo de Conhecimento a partir de Casos Clínicos (baseline deste trabalho). https://github.com/jrsbr/NLP-Projeto1
 - Cookiecutter Data Science. https://drivendata.github.io/cookiecutter-data-science/

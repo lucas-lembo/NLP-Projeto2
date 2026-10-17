@@ -1,6 +1,6 @@
 # Código do Projeto 2
 
-Pacote `kg_ml`. Ele usa o código do Projeto 1 (`kg_extraction`) como biblioteca, sem alterá-lo. Por padrão, o Projeto 1 é procurado em `../../NLP-Projeto1` (relativo a `project2/`). Para outro local, use a variável `P1_DIR`.
+Pacote `kg_ml`. Ele usa o código do [Projeto 1](https://github.com/jrsbr/NLP-Projeto1) (`kg_extraction`) como biblioteca, sem alterá-lo. Por padrão, o Projeto 1 é procurado em `../../NLP-Projeto1` (relativo a `project2/`). Para outro local, use a variável `P1_DIR`.
 
 ## Como rodar
 
@@ -25,6 +25,7 @@ Na primeira vez leva cerca de 6 minutos: o download tem 168 MB e o NER dos 4 mil
 | 4 | `train.py` | pares rotulados + anotação | `metrics*.csv`, `pairs_test_predictions.csv`, `relation_model.joblib` |
 | 5 | `build_graph.py` | predições + grafo do P1 | `data/processed/{nodes,edges}.csv`, `graph_comparison.csv` |
 | — | `figures.py` | resultados | `assets/images/*.png` |
+| — | `build_viewer.py` | grafos do P1 e do P2 + predições + PMI | `assets/graph_viewer/index.html` (comparador de grafos) |
 
 `config.py` guarda caminhos e parâmetros. `features.py` tem os atributos do classificador e não depende do P1, por isso a demonstração consegue usar o modelo salvo.
 

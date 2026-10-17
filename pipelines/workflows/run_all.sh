@@ -12,3 +12,4 @@ python3 -m kg_ml.weak_labels            # passo 3: rótulos automáticos
 python3 -m kg_ml.train                  # passo 4: classificadores + avaliação
 python3 -m kg_ml.build_graph            # passo 5: grafo do P2 e comparação com o P1
 python3 -m kg_ml.figures                # figuras do relatório
+python3 -m kg_ml.build_viewer           # visualizador P1 × P2
